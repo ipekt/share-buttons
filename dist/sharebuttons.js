@@ -61,9 +61,12 @@ var mergeobjects = require('./util/mergeobjects.js');
 if (!window.CustomEvent) {
   (function () {
     function CustomEvent(event, params) {
-      params = params || { bubbles: false, cancelable: false, detail: undefined };
-      var evt = document.createEvent('CustomEvent');
-      evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+      var evt;
+      if (document.createEvent) {
+        params = params || { bubbles: false, cancelable: false, detail: undefined };
+        evt = document.createEvent('CustomEvent');
+        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+      }
       return evt;
     }
 
@@ -148,7 +151,10 @@ Sharebuttons.prototype = {
     if (button.querySelector(that.settings.countSelector)) {
       provider.fetchCount(button, function (count) {
         that.insertCount(button, count);
-        button.dispatchEvent(new CustomEvent('shareCountLoaded'));
+
+        if (button.dispatchEvent) {
+          button.dispatchEvent(new CustomEvent('shareCountLoaded'));
+        }
       });
     }
   },
