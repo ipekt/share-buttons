@@ -2,7 +2,7 @@
 
 A light weight library to fetch social sharing information from APIs that support JSONP.
 
-Take a look at the [demo page](http://finder-dp-lewis.github.io/share-buttons/examples/) to see it in action.
+Take a look at the [demo page](http://finderau.github.io/share-buttons/examples/) to see it in action.
 
 ## Why?
 

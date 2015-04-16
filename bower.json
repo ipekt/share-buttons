@@ -1,0 +1,25 @@
+{
+  "name": "barebones-share-buttons",
+  "version": "0.1.0",
+  "homepage": "https://github.com/finderau/share-buttons",
+  "authors": [
+    "David Lewis <david.lewis@hiveempire.com>"
+  ],
+  "description": "A light weight library to fetch social sharing information from APIs that support JSONP",
+  "main": [
+    "dist/sharebuttons.min.js",
+    "dist/sharebuttons.js"
+  ],
+  "keywords": [
+    "share"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src"
+  ]
+}
