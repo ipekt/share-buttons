@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+  <title>Basic share buttons example</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<h1>Custom provider</h1>
+
+<ul>
+	<li><a data-sharebutton href="http://www.linkedin.com/shareArticle?mini=true&amp;url=http%3A%2F%2Fwww.finder.com.au&amp;source=http%3A%2F%2Fwww.finder.com.au/">LinkedIn <span data-sharecount>0</span></a></li>
+</ul>
+
+<script src="../dist/sharebuttons.min.js"></script>
+<script>
+
+var urlParams = sharebuttons.urlParams,
+  jsonp = sharebuttons.jsonp;
+
+sharebuttons.addProviders([{
+  id: 'linkedin',
+  fetchCount: function (link, callback) {
+    jsonp.get('https://www.linkedin.com/countserv/count/share', {
+      url: decodeURIComponent(urlParams(link.href).url)
+    }, function (result) {
+      callback(result.count);
+    });
+  }
+}]);
+
+sharebuttons.init();
+
+</script>
+
+</body>
+</html>
