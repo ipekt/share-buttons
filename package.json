@@ -1,8 +1,7 @@
 {
-  "name": "share-buttons",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "barebones-share-buttons",
+  "version": "0.1.0",
+  "description": "A light weight library to fetch social sharing information from APIs that support JSONP",
   "scripts": {
     "lint": "jshint --verbose ./src & jshint --verbose ./test",
     "test": "npm run lint && karma start",
@@ -13,7 +12,7 @@
     "url": "https://github.com/findercomau/share-buttons.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/findercomau/share-buttons/issues"
   },
