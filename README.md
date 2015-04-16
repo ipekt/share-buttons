@@ -8,6 +8,14 @@ Take a look at the [demo page](http://finderau.github.io/share-buttons/examples/
 
 The majority of libraries available for providing share buttons provide additions that you probably don't need (eg CSS, tracking scripts etc). This library provides you with a way to progressively enhance a basic link to a social networks sharing page to include a popup window and a call to their API for the amount of shares your page has had.
 
+## Install
+
+You can grab a copy of the files from the `./dist` directory or install via Bower.
+
+```
+bower install barebones-share-buttons
+```
+
 ## Basic usage
 
 In the following example we're using a link to Facebook's sharer page, and we're going to include an element to show how many times our page (finder.com.au) has been shared.
