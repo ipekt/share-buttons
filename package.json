@@ -1,0 +1,32 @@
+{
+  "name": "share-buttons",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "jshint --verbose ./src & jshint --verbose ./test",
+    "test": "npm run lint && karma start",
+    "build": "browserify ./src/app.js -o ./dist/sharebuttons.js && uglifyjs ./dist/sharebuttons.js -o ./dist/sharebuttons.min.js -m"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/findercomau/share-buttons.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/findercomau/share-buttons/issues"
+  },
+  "homepage": "https://github.com/findercomau/share-buttons",
+  "devDependencies": {
+    "browserify": "^9.0.8",
+    "jasmine-core": "^2.2.0",
+    "jshint": "^2.7.0",
+    "karma": "^0.12.31",
+    "karma-browserify": "^4.1.2",
+    "karma-cli": "0.0.4",
+    "karma-jasmine": "^0.3.5",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "uglify-js": "^2.4.20"
+  }
+}
