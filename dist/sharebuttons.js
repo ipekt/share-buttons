@@ -182,7 +182,7 @@ Sharebuttons.prototype = {
 
   insertCount: function (button, number) {
     button.querySelector(this.settings.countSelector).innerHTML = number;
-    button.className += this.settings.loadedClass;
+    button.className += ' ' + this.settings.loadedClass;
   }
 };
 
