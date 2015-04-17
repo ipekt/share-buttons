@@ -8,7 +8,7 @@ module.exports = {
     JSONP.get('https://graph.facebook.com', {
       id: decodeURIComponent(parseLink(button).params.u)
     }, function (result) {
-      callback(result.shares);
+      callback(result.shares || 0);
     });
   }
 };
