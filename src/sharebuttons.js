@@ -114,13 +114,19 @@ Sharebuttons.prototype = {
           ev.preventDefault();
           ev.stopPropagation();
 
-          window.open(ev.currentTarget.href, that.settings.newWindowName, that.settings.newWindowSettings);
+          if (that.openWindow) {
+            that.openWindow.close();
+          }
 
-          // if there's a callback for sharing trigger it with some data
-          that.settings.onShare({
-            provider: provider ? provider.id : that.settings.defaultProviderId
-          });
+          that.openWindow = window.open(ev.currentTarget.href, that.settings.newWindowName, that.settings.newWindowSettings);
+          that.openWindow.focus();
+
         } // end if newWindow
+
+        // if there's a callback for sharing trigger it with some data
+        that.settings.onShare({
+          provider: provider ? provider.id : that.settings.defaultProviderId
+        });
       }, false);
     }
   },
