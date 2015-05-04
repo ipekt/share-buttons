@@ -5,39 +5,80 @@ var Sharebuttons = require('./sharebuttons.js');
 window.sharebuttons = new Sharebuttons();
 
 sharebuttons.addProviders([
-  require('./provider/facebook.js'),
+  require('./provider/facebookshare.js'),
+  require('./provider/facebooklike.js'),
   require('./provider/twitter.js'),
   require('./provider/stumbleupon.js'),
   require('./provider/reddit.js')
 ]);
 
-},{"./provider/facebook.js":2,"./provider/reddit.js":3,"./provider/stumbleupon.js":4,"./provider/twitter.js":5,"./sharebuttons.js":6}],2:[function(require,module,exports){
+},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/reddit.js":4,"./provider/stumbleupon.js":5,"./provider/twitter.js":6,"./sharebuttons.js":7}],2:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
 module.exports = {
-  id: 'facebook',
+  id: 'facebooklike',
+
+  neededBy: function (button) {
+    var returnVal = false;
+    if (button.href.indexOf('facebook.com/plugins/like') !== -1) {
+      returnVal = true;
+    }
+    return returnVal;
+  },
 
   fetchCount: function (button, callback) {
-    JSONP.get('https://graph.facebook.com', {
-      id: decodeURIComponent(parseLink(button).params.u)
+    JSONP.get('https://graph.facebook.com/fql', {
+      q: decodeURIComponent('SELECT like_count FROM link_stat WHERE url="' + parseLink(button).params.href) + '"'
     }, function (result) {
-      callback(result.shares || 0);
+      var total = 0;
+      if (result && result.data && result.data[0]) {
+        total = result.data[0].like_count || 0;
+      }
+      callback(total);
     });
   }
 };
 
-},{"../util/jsonp.js":7,"../util/parselink.js":9}],3:[function(require,module,exports){
+},{"../util/jsonp.js":8,"../util/parselink.js":10}],3:[function(require,module,exports){
+var parseLink = require('../util/parselink.js'),
+  JSONP = require('../util/jsonp.js');
+
+module.exports = {
+  id: 'facebookshare',
+
+  neededBy: function (button) {
+    var returnVal = false;
+    if (button.href.indexOf('facebook.com/sharer/sharer') !== -1) {
+      returnVal = true;
+    }
+    return returnVal;
+  },
+
+  fetchCount: function (button, callback) {
+    JSONP.get('https://graph.facebook.com/fql', {
+      q: decodeURIComponent('SELECT share_count FROM link_stat WHERE url="' + parseLink(button).params.u) + '"'
+    }, function (result) {
+      var total = 0;
+      if (result && result.data && result.data[0]) {
+        total = result.data[0].share_count || 0;
+      }
+      callback(total);
+    });
+  }
+};
+
+},{"../util/jsonp.js":8,"../util/parselink.js":10}],4:[function(require,module,exports){
 module.exports = {
   id: 'reddit'
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = {
   id: 'stumbleupon'
 };
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -52,7 +93,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":7,"../util/parselink.js":9}],6:[function(require,module,exports){
+},{"../util/jsonp.js":8,"../util/parselink.js":10}],7:[function(require,module,exports){
 /*jslint browser: true*/
 /*global CustomEvent*/
 var mergeobjects = require('./util/mergeobjects.js');
@@ -194,7 +235,7 @@ Sharebuttons.prototype = {
 
 module.exports = Sharebuttons;
 
-},{"./util/jsonp.js":7,"./util/mergeobjects.js":8,"./util/urlvars.js":10}],7:[function(require,module,exports){
+},{"./util/jsonp.js":8,"./util/mergeobjects.js":9,"./util/urlvars.js":11}],8:[function(require,module,exports){
 module.exports = (function () {
   var counter = 0,
     head,
@@ -274,7 +315,7 @@ module.exports = (function () {
   };
 }());
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1
@@ -293,7 +334,7 @@ module.exports = function (obj1, obj2) {
   return obj3;
 };
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var urlvars = require('./urlvars.js');
 
 module.exports = function (link) {
@@ -304,7 +345,7 @@ module.exports = function (link) {
   };
 };
 
-},{"./urlvars.js":10}],10:[function(require,module,exports){
+},{"./urlvars.js":11}],11:[function(require,module,exports){
 module.exports = function (href) {
   var vars = [],
     hash,
