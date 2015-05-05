@@ -42,7 +42,7 @@ If you include an element with a`data-sharecount` attribute, the library will de
 
 ### Custom options
 
-Sharebuttons includes a method to override the default options. Default options are set globally and at a provider level. For example, most providers use the global newWindow setting of true but the mailto provider overrides this to newWindow: false.
+Sharebuttons includes a method to override the default options. 
 
 ```
 sharebuttons.updateOptions({
