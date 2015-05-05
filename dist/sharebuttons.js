@@ -4,15 +4,16 @@ var Sharebuttons = require('./sharebuttons.js');
 
 window.sharebuttons = new Sharebuttons();
 
-sharebuttons.addProviders([
+window.sharebuttons.addProviders([
   require('./provider/facebookshare.js'),
   require('./provider/facebooklike.js'),
   require('./provider/twitter.js'),
   require('./provider/stumbleupon.js'),
-  require('./provider/reddit.js')
+  require('./provider/reddit.js'),
+  require('./provider/mailto.js')
 ]);
 
-},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/reddit.js":4,"./provider/stumbleupon.js":5,"./provider/twitter.js":6,"./sharebuttons.js":7}],2:[function(require,module,exports){
+},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/stumbleupon.js":6,"./provider/twitter.js":7,"./sharebuttons.js":9}],2:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -40,7 +41,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":8,"../util/parselink.js":10}],3:[function(require,module,exports){
+},{"../util/jsonp.js":10,"../util/parselink.js":12}],3:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -68,17 +69,34 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":8,"../util/parselink.js":10}],4:[function(require,module,exports){
+},{"../util/jsonp.js":10,"../util/parselink.js":12}],4:[function(require,module,exports){
 module.exports = {
-  id: 'reddit'
+  id: 'mailto',
+
+  options: {
+    'newWindow': false
+  },
+
+  neededBy: function (button) {
+    var returnVal = false;
+    if (button.href.indexOf('mailto') !== -1) {
+      returnVal = true;
+    }
+    return returnVal;
+  }
 };
 
 },{}],5:[function(require,module,exports){
 module.exports = {
-  id: 'stumbleupon'
+  id: 'reddit'
 };
 
 },{}],6:[function(require,module,exports){
+module.exports = {
+  id: 'stumbleupon'
+};
+
+},{}],7:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -93,7 +111,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":8,"../util/parselink.js":10}],7:[function(require,module,exports){
+},{"../util/jsonp.js":10,"../util/parselink.js":12}],8:[function(require,module,exports){
 /*jslint browser: true*/
 /*global CustomEvent*/
 var mergeobjects = require('./util/mergeobjects.js');
@@ -116,15 +134,70 @@ if (!window.CustomEvent) {
   }());
 }
 
-function basicProviderVerification(button, id) {
-  var returnVal = false;
-  if (button.hostname.indexOf(id) !== -1) {
-    returnVal = true;
-  }
-  return returnVal;
+function insertCount(button, number, options) {
+  button.querySelector(options.countSelector).innerHTML = number;
+  button.className += ' ' + options.loadedClass;
 }
 
+function bindEvent(button, provider, options) {
+  if (button.addEventListener) {
+    button.addEventListener('click', function (ev) {
+      // if we're opening a new window then cancel default behaviour
+      // but we'll let IE8 fallback to a default link
+      if (options.newWindow === true && ev.preventDefault) {
+        ev.preventDefault();
+        ev.stopPropagation();
+
+        window.open(ev.currentTarget.href, undefined, options.newWindowSettings);
+      } // end if newWindow
+
+      // if there's a callback for sharing trigger it with some data
+      options.onShare({
+        provider: provider ? provider.id : options.defaultProviderId
+      });
+    }, false);
+  }
+}
+
+function updateDOM(button, provider, defaultoptions, useroptions) {
+  var settings = defaultoptions || {}, $count = button.querySelector(settings.countSelector);
+
+  // merge in options set by provider 
+  settings = mergeobjects(settings, provider.options);
+
+  // merge in options set by user via initialisation
+  settings = mergeobjects(settings, useroptions);
+
+  // merge in options set by user via the element
+  try {
+    settings = mergeobjects(settings, JSON.parse(button.dataset.sharebutton));
+  } catch (ignore) {}
+
+  bindEvent(button, provider, settings);
+
+  // only fetch the count if there's a dom element for it to go in
+  if ($count) {
+    provider.fetchCount(button, function (count) {
+      insertCount(button, count, settings);
+
+      if (button.dispatchEvent) {
+        button.dispatchEvent(new CustomEvent('shareCountLoaded'));
+      }
+    });
+  }
+}
+
+module.exports = {
+  updateDOM: updateDOM
+};
+
+},{"./util/mergeobjects.js":11}],9:[function(require,module,exports){
+/*jslint browser: true*/
+var mergeobjects = require('./util/mergeobjects.js'),
+  updateDOM = require('./sharebutton.js').updateDOM;
+
 var Sharebuttons = function (options) {
+  this.userOptions = options;
   this.settings = mergeobjects(this.defaults, options || {});
   this.providers = [];
 };
@@ -148,7 +221,8 @@ Sharebuttons.prototype = {
   },
 
   updateSettings: function (options) {
-    this.settings = mergeobjects(this.defaults, options || {});
+    this.userOptions = mergeobjects(this.userOptions, options || {});
+    this.settings = mergeobjects(this.settings, options || {});
   },
 
   addProviders: function (providers) {
@@ -166,7 +240,7 @@ Sharebuttons.prototype = {
     var i;
     // loop through buttons and update the DOM with provider info
     for (i = 0; i < buttons.length; i = i + 1) {
-      this.updateDOM(buttons[i], this.findProvider(buttons[i], providers));
+      updateDOM(buttons[i], this.findProvider(buttons[i], providers), this.settings, this.userOptions);
     }
   },
 
@@ -175,67 +249,28 @@ Sharebuttons.prototype = {
 
     // loop through the providers and see if the button matches any of them
     for (i = 0; i < providers.length; i = i + 1) {
-      if ((providers[i].neededBy && providers[i].neededBy(button)) || (providers[i].id && basicProviderVerification(button, providers[i].id))) {
+
+      // if the provider has a neededBy method, use that to determine if the provider is needed on this button
+      // if that fails, fall back onto the standard way of checking
+      if ((providers[i].neededBy && providers[i].neededBy(button)) || (providers[i].id && this.basicProviderVerification(button, providers[i].id))) {
         validProvider = providers[i];
       }
     }
-
     return validProvider;
   },
 
-  updateDOM: function (button, provider) {
-    var that = this;
-
-    this.bindEvent(button, provider);
-
-    // only fetch the count if there's a dom element for it to go in
-    if (button.querySelector(that.settings.countSelector)) {
-      provider.fetchCount(button, function (count) {
-        that.insertCount(button, count);
-
-        if (button.dispatchEvent) {
-          button.dispatchEvent(new CustomEvent('shareCountLoaded'));
-        }
-      });
+  basicProviderVerification: function (button, id) {
+    var returnVal = false;
+    if (button.hostname.indexOf(id) !== -1) {
+      returnVal = true;
     }
-  },
-
-  bindEvent: function (button, provider) {
-    var that = this;
-    if (button.addEventListener) {
-      button.addEventListener('click', function (ev) {
-        // if we're opening a new window then cancel default behaviour
-        // but we'll let IE8 fallback to a default link
-        if (that.settings.newWindow === true && ev.preventDefault) {
-          ev.preventDefault();
-          ev.stopPropagation();
-
-          if (that.openWindow) {
-            that.openWindow.close();
-          }
-
-          that.openWindow = window.open(ev.currentTarget.href, that.settings.newWindowName, that.settings.newWindowSettings);
-          that.openWindow.focus();
-
-        } // end if newWindow
-
-        // if there's a callback for sharing trigger it with some data
-        that.settings.onShare({
-          provider: provider ? provider.id : that.settings.defaultProviderId
-        });
-      }, false);
-    }
-  },
-
-  insertCount: function (button, number) {
-    button.querySelector(this.settings.countSelector).innerHTML = number;
-    button.className += ' ' + this.settings.loadedClass;
+    return returnVal;
   }
 };
 
 module.exports = Sharebuttons;
 
-},{"./util/jsonp.js":8,"./util/mergeobjects.js":9,"./util/urlvars.js":11}],8:[function(require,module,exports){
+},{"./sharebutton.js":8,"./util/jsonp.js":10,"./util/mergeobjects.js":11,"./util/urlvars.js":13}],10:[function(require,module,exports){
 module.exports = (function () {
   var counter = 0,
     head,
@@ -315,7 +350,7 @@ module.exports = (function () {
   };
 }());
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1
@@ -334,7 +369,7 @@ module.exports = function (obj1, obj2) {
   return obj3;
 };
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var urlvars = require('./urlvars.js');
 
 module.exports = function (link) {
@@ -345,7 +380,7 @@ module.exports = function (link) {
   };
 };
 
-},{"./urlvars.js":11}],11:[function(require,module,exports){
+},{"./urlvars.js":13}],13:[function(require,module,exports){
 module.exports = function (href) {
   var vars = [],
     hash,

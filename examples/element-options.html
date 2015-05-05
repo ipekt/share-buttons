@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+<head>
+  <title>Basic share buttons example</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<h1>Options set on elements</h1>
+
+<h2>finder.com.au</h2>
+<ul>
+	<li><a data-sharebutton='{ "newWindow": false }' href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.finder.com.au">Facebook with new window set to false <span data-sharecount>0</span></a></li>
+	<li><a data-sharebutton href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.finder.com.au">Facebook using default newWindow setting <span data-sharecount>0</span></a></li>
+	<li><a data-sharebutton href="mailto:?subject=options">Mail to using default setting, which is set to false in the provider</a></li>
+	<li><a data-sharebutton='{ "newWindow": true }' href="mailto:?subject=options">Mail to using custom newWindow setting</a></li>
+</ul>
+
+<script src="../dist/sharebuttons.min.js"></script>
+<script>
+	sharebuttons.init();
+</script>
+</body>
+</html>

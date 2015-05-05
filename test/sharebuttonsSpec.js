@@ -31,12 +31,12 @@ describe('sharebuttons', function () {
   });
 
   it('should update counter with a number', function (done) {
-    linkEl.addEventListener('shareCountLoaded', function () {
-      expect(countEl.innerText).not.toBe('Not Loaded');
-      done();
-    }, false);
-
+    sharebuttons.updateSettings({
+      'onFetch': function () {
+        expect(countEl.innerText).not.toBe('Not Loaded');
+        done();
+      }
+    });
     sharebuttons.init();
   });
-
 });
