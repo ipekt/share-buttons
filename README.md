@@ -40,7 +40,16 @@ If you include an element with a`data-sharecount` attribute, the library will de
 
 ## Advanced usage
 
-The call to Sharebuttons can use an options object to override default behaviour.
+### Custom options
+
+Sharebuttons includes a method to override the default options. 
+
+```
+sharebuttons.updateOptions({
+  'newWindow': false
+});
+```
+#### Options available
 
 * `selector` string - default selector to use to get the links
 * `loadedClass` string - class applied to the share button once the count is fetched
@@ -48,6 +57,14 @@ The call to Sharebuttons can use an options object to override default behaviour
 * `newWindow` boolean - determines whether a new window should be opened
 * `defaultProviderId` string - if there is no provider plugin the ID will default to this value
 * `onShare` function - This callback is dispatched after a share button is clicked on
+* `onFetch` function - This callback is dispatched after a the share count is fetched from the social network
+
+Additional note on options. They can be defined in 4 areas:
+
+1. Globally
+2. By the provider
+3. From a call to the updateOptions method
+4. On the element being used as a share button [see the element options example](http://finderau.github.io/share-buttons/examples/element-options.html)
 
 ### Adding a provider
 
