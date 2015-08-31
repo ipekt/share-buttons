@@ -9,12 +9,14 @@
 
 <h2>finder.com.au</h2>
 <ul>
-	<li><a data-sharebutton href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.finder.com.au">Facebook <span data-sharecount>0</span></a></li>
-	<li><a data-sharebutton href="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.finder.com.au">FB Likes <span data-sharecount>0</span></a></li>
-	<li><a data-sharebutton href="https://twitter.com/intent/tweet?text=Twitter%20Text&amp;url=http%3A%2F%2Fwww.finder.com.au%2F&amp;via=findercomau&amp;original_referer=">Twitter <span data-sharecount>0</span></a></li>
-	<li><a data-sharebutton href="https://twitter.com/intent/tweet?text=Twitter%20Text&amp;url=http%3A%2F%2Fwww.finder.com.au%2F&amp;via=findercomau&amp;original_referer=">Twitter but using server side number <span>99999</span></a></li>
+  <li><a data-sharebutton href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.finder.com.au">Facebook <span data-sharecount>0</span></a></li>
+  <li><a data-sharebutton href="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fwww.finder.com.au">FB Likes <span data-sharecount>0</span></a></li>
+  <li><a data-sharebutton href="https://twitter.com/intent/tweet?text=Twitter%20Text&amp;url=http%3A%2F%2Fwww.finder.com.au%2F&amp;via=findercomau&amp;original_referer=">Twitter <span data-sharecount>0</span></a></li>
+  <li><a data-sharebutton href="https://twitter.com/intent/tweet?text=Twitter%20Text&amp;url=http%3A%2F%2Fwww.finder.com.au%2F&amp;via=findercomau&amp;original_referer=">Twitter but using server side number <span>99999</span></a></li>
   <li><a data-sharebutton href="http://www.stumbleupon.com/badge/?url=http%3A%2F%2Fwww.finder.com.au">Stumble Upon</a></li>
   <li><a data-sharebutton href="http://www.reddit.com/submit?url=http%3A%2F%2Fwww.finder.com.au&amp;title=Finder">Reddit</a></li>
+  <li><a href="sms:?&amp;body=Body" data-sharebutton>SMS</a></li>
+  <li><a href="whatsapp://send?text=Hello" data-sharebutton>WhatsApp</a></li>
 </ul>
 
 <h2>finder.com</h2>
@@ -22,9 +24,15 @@
 
 
 
-<script src="../dist/sharebuttons.min.js"></script>
+<script src="../dist/sharebuttons.js"></script>
 <script>
-	sharebuttons.init();
+  sharebuttons.updateSettings({
+    onShare: function (result) {
+      console.log(result.provider);
+    }
+  });
+
+  sharebuttons.init();
 </script>
 </body>
 </html>
