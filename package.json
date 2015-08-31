@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "jshint --verbose ./src & jshint --verbose ./test",
     "test": "npm run lint && karma start",
-    "build": "browserify ./src/app.js -o ./dist/sharebuttons.js && uglifyjs ./dist/sharebuttons.js -o ./dist/sharebuttons.min.js -m"
+    "build": "rm -rf ./dist && mkdir ./dist && browserify ./src/app.js -o ./dist/sharebuttons.js && uglifyjs ./dist/sharebuttons.js -o ./dist/sharebuttons.min.js -m"
   },
   "repository": {
     "type": "git",
