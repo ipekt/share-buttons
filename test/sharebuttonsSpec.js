@@ -39,4 +39,25 @@ describe('sharebuttons', function () {
     });
     sharebuttons.init();
   });
+
+  it('should include the name of the provider when used', function (done) {
+
+    // set up and event to simulate a mouse click
+    var myEvt = document.createEvent('MouseEvents');
+    myEvt.initEvent('click');
+
+    sharebuttons.updateSettings({
+      'onShare': function (result) {
+        result = result || {};
+        expect(result.provider).toBe('example');
+        done();
+      }
+    });
+
+    // initialise sharebuttons
+    sharebuttons.init();
+
+    // simulate a click
+    linkEl.dispatchEvent(myEvt);
+  });
 });

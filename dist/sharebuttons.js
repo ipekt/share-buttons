@@ -7,13 +7,15 @@ window.sharebuttons = new Sharebuttons();
 window.sharebuttons.addProviders([
   require('./provider/facebookshare.js'),
   require('./provider/facebooklike.js'),
-  require('./provider/twitter.js'),
-  require('./provider/stumbleupon.js'),
+  require('./provider/mailto.js'),
   require('./provider/reddit.js'),
-  require('./provider/mailto.js')
+  require('./provider/sms.js'),
+  require('./provider/stumbleupon.js'),
+  require('./provider/twitter.js'),
+  require('./provider/whatsapp.js')
 ]);
 
-},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/stumbleupon.js":6,"./provider/twitter.js":7,"./sharebuttons.js":9}],2:[function(require,module,exports){
+},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/sms.js":6,"./provider/stumbleupon.js":7,"./provider/twitter.js":8,"./provider/whatsapp.js":9,"./sharebuttons.js":11}],2:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -41,7 +43,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":10,"../util/parselink.js":12}],3:[function(require,module,exports){
+},{"../util/jsonp.js":12,"../util/parselink.js":14}],3:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -69,7 +71,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":10,"../util/parselink.js":12}],4:[function(require,module,exports){
+},{"../util/jsonp.js":12,"../util/parselink.js":14}],4:[function(require,module,exports){
 module.exports = {
   id: 'mailto',
 
@@ -93,10 +95,23 @@ module.exports = {
 
 },{}],6:[function(require,module,exports){
 module.exports = {
-  id: 'stumbleupon'
+  id: 'sms',
+
+  neededBy: function (button) {
+    var returnVal = false;
+    if (button.href.indexOf('sms') !== -1) {
+      returnVal = true;
+    }
+    return returnVal;
+  }
 };
 
 },{}],7:[function(require,module,exports){
+module.exports = {
+  id: 'stumbleupon'
+};
+
+},{}],8:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -111,43 +126,32 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":10,"../util/parselink.js":12}],8:[function(require,module,exports){
+},{"../util/jsonp.js":12,"../util/parselink.js":14}],9:[function(require,module,exports){
+module.exports = {
+  id: 'whatsapp',
+
+  neededBy: function (button) {
+    var returnVal = false;
+    if (button.href.indexOf('whatsapp') !== -1) {
+      returnVal = true;
+    }
+    return returnVal;
+  }
+};
+
+},{}],10:[function(require,module,exports){
 /*jslint browser: true*/
 /*global CustomEvent*/
 var mergeobjects = require('./util/mergeobjects.js');
 
-// polyfill custom events
-if (!window.CustomEvent) {
-  (function () {
-    function CustomEvent(event, params) {
-      var evt;
-      if (document.createEvent) {
-        params = params || { bubbles: false, cancelable: false, detail: undefined };
-        evt = document.createEvent('CustomEvent');
-        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-      }
-      return evt;
-    }
-
-    CustomEvent.prototype = window.Event.prototype;
-    window.CustomEvent = CustomEvent;
-  }());
-}
-
-function insertCount(button, number, options) {
-  button.querySelector(options.countSelector).innerHTML = number;
-  button.className += ' ' + options.loadedClass;
-}
-
-function bindEvent(button, provider, options) {
-  if (button.addEventListener) {
-    button.addEventListener('click', function (ev) {
+function bindEvent(buttonEl, provider, options) {
+  if (buttonEl.addEventListener) {
+    buttonEl.addEventListener('click', function (ev) {
       // if we're opening a new window then cancel default behaviour
       // but we'll let IE8 fallback to a default link
       if (options.newWindow === true && ev.preventDefault) {
         ev.preventDefault();
         ev.stopPropagation();
-
         window.open(ev.currentTarget.href, undefined, options.newWindowSettings);
       } // end if newWindow
 
@@ -159,8 +163,8 @@ function bindEvent(button, provider, options) {
   }
 }
 
-function updateDOM(button, provider, defaultoptions, useroptions) {
-  var settings = defaultoptions || {}, $count = button.querySelector(settings.countSelector);
+function updateDOM(buttonEl, provider, defaultoptions, useroptions) {
+  var settings = defaultoptions || {}, countEl = buttonEl.querySelector(settings.countSelector);
 
   // merge in options set by provider 
   settings = mergeobjects(settings, provider.options);
@@ -170,19 +174,22 @@ function updateDOM(button, provider, defaultoptions, useroptions) {
 
   // merge in options set by user via the element
   try {
-    settings = mergeobjects(settings, JSON.parse(button.dataset.sharebutton));
+    settings = mergeobjects(settings, JSON.parse(buttonEl.dataset.sharebutton));
   } catch (ignore) {}
 
-  bindEvent(button, provider, settings);
+  bindEvent(buttonEl, provider, settings);
 
-  // only fetch the count if there's a dom element for it to go in
-  if ($count) {
-    provider.fetchCount(button, function (count) {
-      insertCount(button, count, settings);
+  // only fetch the count if there's a DOM element for it to go in
+  if (countEl) {
+    provider.fetchCount(buttonEl, function (count) {
+      // update the count element with the number
+      countEl.innerHTML = count;
+      buttonEl.className += ' ' + settings.loadedClass;
 
-      if (button.dispatchEvent) {
-        button.dispatchEvent(new CustomEvent('shareCountLoaded'));
-      }
+      settings.onFetch({
+        'provider': provider,
+        'count': count
+      });
     });
   }
 }
@@ -191,7 +198,7 @@ module.exports = {
   updateDOM: updateDOM
 };
 
-},{"./util/mergeobjects.js":11}],9:[function(require,module,exports){
+},{"./util/mergeobjects.js":13}],11:[function(require,module,exports){
 /*jslint browser: true*/
 var mergeobjects = require('./util/mergeobjects.js'),
   updateDOM = require('./sharebutton.js').updateDOM;
@@ -210,9 +217,9 @@ Sharebuttons.prototype = {
     'countSelector': '[data-sharecount]', // selector for the child element that contains the count number
     'newWindow': true, // determines whether a new window should be opened
     'newWindowSettings': 'width=520,height=420,resizable=yes,scrollbars=yes', // settings passed to window.open
-    'newWindowName': 'sharebuttons', // name given to window.open
     'defaultProviderId': 'unknown', // if there is no provider plugin, the ID will default to this
-    'onShare': function () { return; } // This callback is dispatched after a share button is clicked on
+    'onShare': function () { return; }, // This callback is dispatched after a share button is clicked on
+    'onFetch': function () { return; }
   },
 
   init: function () {
@@ -270,7 +277,7 @@ Sharebuttons.prototype = {
 
 module.exports = Sharebuttons;
 
-},{"./sharebutton.js":8,"./util/jsonp.js":10,"./util/mergeobjects.js":11,"./util/urlvars.js":13}],10:[function(require,module,exports){
+},{"./sharebutton.js":10,"./util/jsonp.js":12,"./util/mergeobjects.js":13,"./util/urlvars.js":15}],12:[function(require,module,exports){
 module.exports = (function () {
   var counter = 0,
     head,
@@ -350,7 +357,7 @@ module.exports = (function () {
   };
 }());
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1
@@ -369,7 +376,7 @@ module.exports = function (obj1, obj2) {
   return obj3;
 };
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 var urlvars = require('./urlvars.js');
 
 module.exports = function (link) {
@@ -380,7 +387,7 @@ module.exports = function (link) {
   };
 };
 
-},{"./urlvars.js":13}],13:[function(require,module,exports){
+},{"./urlvars.js":15}],15:[function(require,module,exports){
 module.exports = function (href) {
   var vars = [],
     hash,
