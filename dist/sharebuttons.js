@@ -16,7 +16,7 @@ window.sharebuttons.addProviders([
   require('./provider/googleplus.js')
 ]);
 
-},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/sms.js":6,"./provider/stumbleupon.js":7,"./provider/twitter.js":8,"./provider/whatsapp.js":9,"./provider/googleplus.js":10,"./sharebuttons.js":12}],2:[function(require,module,exports){
+},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/googleplus.js":4,"./provider/mailto.js":5,"./provider/reddit.js":6,"./provider/sms.js":7,"./provider/stumbleupon.js":8,"./provider/twitter.js":9,"./provider/whatsapp.js":10,"./sharebuttons.js":12}],2:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -74,6 +74,19 @@ module.exports = {
 
 },{"../util/jsonp.js":13,"../util/parselink.js":15}],4:[function(require,module,exports){
 module.exports = {
+    id: 'googleplus',
+
+    neededBy: function (button) {
+        var returnVal = false;
+        if (button.href.indexOf('plus.google.com/share') !== -1) {
+            returnVal = true;
+        }
+        return returnVal;
+    }
+};
+
+},{}],5:[function(require,module,exports){
+module.exports = {
   id: 'mailto',
 
   options: {
@@ -89,12 +102,12 @@ module.exports = {
   }
 };
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = {
   id: 'reddit'
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = {
   id: 'sms',
 
@@ -107,12 +120,12 @@ module.exports = {
   }
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = {
   id: 'stumbleupon'
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -127,7 +140,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":13,"../util/parselink.js":15}],9:[function(require,module,exports){
+},{"../util/jsonp.js":13,"../util/parselink.js":15}],10:[function(require,module,exports){
 module.exports = {
   id: 'whatsapp',
 
@@ -139,19 +152,6 @@ module.exports = {
     return returnVal;
   }
 };
-
-},{}],10:[function(require,module,exports){
-  module.exports = {
-    id: 'googleplus',
-
-    neededBy: function (button) {
-      var returnVal = false;
-      if (button.href.indexOf('plus.google.com/share') !== -1) {
-        returnVal = true;
-      }
-      return returnVal;
-    }
-  };
 
 },{}],11:[function(require,module,exports){
 /*jslint browser: true*/
