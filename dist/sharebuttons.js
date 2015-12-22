@@ -12,10 +12,11 @@ window.sharebuttons.addProviders([
   require('./provider/sms.js'),
   require('./provider/stumbleupon.js'),
   require('./provider/twitter.js'),
-  require('./provider/whatsapp.js')
+  require('./provider/whatsapp.js'),
+  require('./provider/googleplus.js')
 ]);
 
-},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/sms.js":6,"./provider/stumbleupon.js":7,"./provider/twitter.js":8,"./provider/whatsapp.js":9,"./sharebuttons.js":11}],2:[function(require,module,exports){
+},{"./provider/facebooklike.js":2,"./provider/facebookshare.js":3,"./provider/mailto.js":4,"./provider/reddit.js":5,"./provider/sms.js":6,"./provider/stumbleupon.js":7,"./provider/twitter.js":8,"./provider/whatsapp.js":9,"./provider/googleplus.js":10,"./sharebuttons.js":12}],2:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -43,7 +44,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":12,"../util/parselink.js":14}],3:[function(require,module,exports){
+},{"../util/jsonp.js":13,"../util/parselink.js":15}],3:[function(require,module,exports){
 var parseLink = require('../util/parselink.js'),
   JSONP = require('../util/jsonp.js');
 
@@ -71,7 +72,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":12,"../util/parselink.js":14}],4:[function(require,module,exports){
+},{"../util/jsonp.js":13,"../util/parselink.js":15}],4:[function(require,module,exports){
 module.exports = {
   id: 'mailto',
 
@@ -126,7 +127,7 @@ module.exports = {
   }
 };
 
-},{"../util/jsonp.js":12,"../util/parselink.js":14}],9:[function(require,module,exports){
+},{"../util/jsonp.js":13,"../util/parselink.js":15}],9:[function(require,module,exports){
 module.exports = {
   id: 'whatsapp',
 
@@ -140,6 +141,19 @@ module.exports = {
 };
 
 },{}],10:[function(require,module,exports){
+  module.exports = {
+    id: 'googleplus',
+
+    neededBy: function (button) {
+      var returnVal = false;
+      if (button.href.indexOf('plus.google.com/share') !== -1) {
+        returnVal = true;
+      }
+      return returnVal;
+    }
+  };
+
+},{}],11:[function(require,module,exports){
 /*jslint browser: true*/
 /*global CustomEvent*/
 var mergeobjects = require('./util/mergeobjects.js');
@@ -198,7 +212,7 @@ module.exports = {
   updateDOM: updateDOM
 };
 
-},{"./util/mergeobjects.js":13}],11:[function(require,module,exports){
+},{"./util/mergeobjects.js":14}],12:[function(require,module,exports){
 /*jslint browser: true*/
 var mergeobjects = require('./util/mergeobjects.js'),
   updateDOM = require('./sharebutton.js').updateDOM;
@@ -277,7 +291,7 @@ Sharebuttons.prototype = {
 
 module.exports = Sharebuttons;
 
-},{"./sharebutton.js":10,"./util/jsonp.js":12,"./util/mergeobjects.js":13,"./util/urlvars.js":15}],12:[function(require,module,exports){
+},{"./sharebutton.js":11,"./util/jsonp.js":13,"./util/mergeobjects.js":14,"./util/urlvars.js":16}],13:[function(require,module,exports){
 module.exports = (function () {
   var counter = 0,
     head,
@@ -357,7 +371,7 @@ module.exports = (function () {
   };
 }());
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Overwrites obj1's values with obj2's and adds obj2's if non existent in obj1
  * @param obj1
@@ -376,7 +390,7 @@ module.exports = function (obj1, obj2) {
   return obj3;
 };
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var urlvars = require('./urlvars.js');
 
 module.exports = function (link) {
@@ -387,7 +401,7 @@ module.exports = function (link) {
   };
 };
 
-},{"./urlvars.js":15}],15:[function(require,module,exports){
+},{"./urlvars.js":16}],16:[function(require,module,exports){
 module.exports = function (href) {
   var vars = [],
     hash,

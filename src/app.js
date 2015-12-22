@@ -11,5 +11,6 @@ window.sharebuttons.addProviders([
   require('./provider/sms.js'),
   require('./provider/stumbleupon.js'),
   require('./provider/twitter.js'),
-  require('./provider/whatsapp.js')
+  require('./provider/whatsapp.js'),
+  require('./provider/googleplus.js')
 ]);
