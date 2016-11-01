@@ -60,14 +60,10 @@ module.exports = {
   },
 
   fetchCount: function (button, callback) {
-    JSONP.get('https://graph.facebook.com/fql', {
-      q: decodeURIComponent('SELECT share_count FROM link_stat WHERE url="' + parseLink(button).params.u) + '"'
+    JSONP.get('https://graph.facebook.com/', {
+      id: parseLink(button).params.u
     }, function (result) {
-      var total = 0;
-      if (result && result.data && result.data[0]) {
-        total = result.data[0].share_count || 0;
-      }
-      callback(total);
+      callback(result.share.share_count);
     });
   }
 };
